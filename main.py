@@ -7,7 +7,14 @@ import time
 MODEL_PATH = 'runs/segment/fire_smoke-3/weights/best.pt' 
 
 ESP32_URL = "http://192.168.137.72:81/stream"
-CONFIDENCE_THRESHOLD = 0.4
+CONFIDENCE_THRESHOLD = 0.75
+
+# ☀️ 렌즈 밝기 및 대비 설정 (수정 가능한 구역)
+# BRIGHTNESS: -255 ~ 255 (음수면 어두워지고, 양수면 밝아집니다)
+# CONTRAST: 0.5 ~ 3.0 (1.0이 기본값, 높일수록 명암 대비가 강해집니다)
+BRIGHTNESS = -30    # 💡 팁: 창문 빛 번짐을 줄이려면 약간 음수(-20 ~ -50)로 낮춰보세요!
+CONTRAST = 1.2      # 💡 팁: 대비를 살짝 높이면 연기와 빛의 경계가 뚜렷해집니다.
+# =================================================
 # =================================================
 
 print("🔥 Fire & Smoke Detection 시작...")
@@ -37,6 +44,8 @@ while True:
         time.sleep(1)
         continue
 
+    adjusted_frame = cv2.convertScaleAbs(frame, alpha=CONTRAST, beta=BRIGHTNESS)
+
     # YOLO 추론
     results = model(frame, conf=CONFIDENCE_THRESHOLD, verbose=False)
 
@@ -52,6 +61,22 @@ while True:
 
     # 창 표시
     cv2.imshow("Fire & Smoke Detection - ESP32", annotated_frame)
+
+    # 입력된 키보드 값 감지
+    key = cv2.waitKey(1) & 0xFF
+
+    # 📸 [단축키 S] 누르면 현재 프레임 캡처 저장
+    if key == ord('s'):
+        import os
+        # 캡처본을 저장할 폴더 생성
+        os.makedirs("captures", exist_ok=True)
+        
+        # 파일명을 현재 시간으로 설정 (예: capture_20260626_123000.jpg)
+        filename = f"captures/capture_{time.strftime('%Y%m%d_%H%M%S')}.jpg"
+        
+        # 원본 이미지(frame) 또는 박스가 그려진 이미지(annotated_frame) 선택해서 저장
+        cv2.imwrite(filename, annotated_frame) 
+        print(f"📸 사진이 저장되었습니다: {filename}")
 
     # 'q' 키로 종료
     if cv2.waitKey(1) & 0xFF == ord('q'):
