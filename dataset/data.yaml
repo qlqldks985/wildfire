@@ -1,7 +1,13 @@
-path: C:\JJH\fire_project\dataset
-train: train/images
-val: valid/images
-test: test/images
+train: ../train/images
+val: ../valid/images
+test: ../test/images
 
-nc: 2
-names: ['fire', 'smoke']
+nc: 1
+names: ['fire']
+
+roboflow:
+  workspace: -r59va
+  project: lighter-uvblk-rolyw
+  version: 1
+  license: Public Domain
+  url: https://universe.roboflow.com/-r59va/lighter-uvblk-rolyw/dataset/1
