@@ -2,12 +2,12 @@ train: ../train/images
 val: ../valid/images
 test: ../test/images
 
-nc: 1
-names: ['fire']
+nc: 10
+names: ['0', '2', '3', '4', 'Liquid', 'Metal', 'Solid', 'fire', 'object', 'smoke']
 
 roboflow:
-  workspace: -r59va
-  project: lighter-uvblk-rolyw
+  workspace: -4rnl1
+  project: fire-0lzg9-6ifug
   version: 1
-  license: Public Domain
-  url: https://universe.roboflow.com/-r59va/lighter-uvblk-rolyw/dataset/1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/-4rnl1/fire-0lzg9-6ifug/dataset/1

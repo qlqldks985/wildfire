@@ -1,5 +1,6 @@
 import cv2
 from ultralytics import YOLO
+import os
 import time
 
 # ====================== 설정 ======================
@@ -7,7 +8,7 @@ import time
 # main.py 상단 수정 예시
 MODEL_PATH = 'runs/detect/train/weights/best.pt' 
 
-ESP32_URL = "http://192.168.137.178:81/stream"
+ESP32_URL = "http://192.168.137.204:81/stream"
 CONFIDENCE_THRESHOLD = 0.20
 
 # ☀️ 렌즈 밝기 및 대비 설정 (수정 가능한 구역)
@@ -51,6 +52,26 @@ while True:
 
     # YOLO 추론
     results = model(adjusted_frame, conf=CONFIDENCE_THRESHOLD, verbose=False)
+
+    # 1. 데이터를 저장할 폴더가 없으면 자동으로 생성 (에러 방지)
+    os.makedirs("auto_dataset", exist_ok=True)
+
+    # 2. 모델이 검출한 물체(박스)들이 있는지 확인
+    if results[0].boxes is not None:
+        for result in results[0].boxes:
+            conf = float(result.conf[0])
+
+            # 💡 AI가 15% ~ 40% 사이로 헷갈려하는 애매한 프레임만 골라내기
+            if 0.15 <= conf <= 0.40:
+                # 파일명을 정수형 시간으로 중복 없이 설정
+                img_name = f"auto_dataset/check_{int(time.time())}.jpg"
+
+                # ⭐️ 보정된 화면이 아닌, 추후 라벨링에 쓸 깨끗한 '원본 frame'을 저장
+                cv2.imwrite(img_name, frame)
+                print(f"📸 [자동 수집] 애매한 프레임 발견! 저장 완료: {img_name} (확률: {conf:.2f})")
+
+                # 한 프레임에서 여러 개가 잡혀 사진이 중복 저장되는 것을 막기 위해 탈출
+                break
 
     # 결과 화면에 그리기
     annotated_frame = results[0].plot()
