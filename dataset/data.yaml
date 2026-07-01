@@ -1,13 +1,13 @@
 train: ../train/images
 val: ../valid/images
-test: ../test/images
+# test: ../test/images
 
-nc: 10
-names: ['0', '2', '3', '4', 'Liquid', 'Metal', 'Solid', 'fire', 'object', 'smoke']
+nc: 2
+names: ['fire', 'smoke']
 
 roboflow:
-  workspace: -4rnl1
-  project: fire-0lzg9-6ifug
-  version: 1
+  workspace: dataregenerator
+  project: fire-and-smoke-ikpgn
+  version: 14
   license: CC BY 4.0
-  url: https://universe.roboflow.com/-4rnl1/fire-0lzg9-6ifug/dataset/1
+  url: https://universe.roboflow.com/dataregenerator/fire-and-smoke-ikpgn/dataset/14
